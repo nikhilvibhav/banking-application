@@ -16,3 +16,6 @@ include 'services:webservice'
 */
 
 rootProject.name = 'banking-application'
+include 'account-service'
+include 'transaction-service'
+
