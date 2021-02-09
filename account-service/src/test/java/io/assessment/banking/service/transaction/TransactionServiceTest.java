@@ -36,6 +36,9 @@ public class TransactionServiceTest extends AbstractTest {
   @Autowired private TransactionServiceImpl transactionService;
   @Autowired private MockRestServiceServer server;
 
+  private static final String TRANSACTION_SERVICE_URI =
+      "http://transaction-service:8081/api/bank/v1/transaction";
+
   @Test
   public void givenValidTransaction_WhenSaveTransaction_ThenSucceed() throws Exception {
     final TransactionVO transaction = getTransactionVO();
@@ -45,7 +48,7 @@ public class TransactionServiceTest extends AbstractTest {
         "{\"accountId\":1,\"amount\":10,\"dateTransacted\":\"2021-02-09T00:31:45.7462794+05:30\",\"type\":\"CREDIT\"}";
 
     server
-        .expect(requestTo("http://localhost:8081/api/bank/v1/transaction"))
+        .expect(requestTo(TRANSACTION_SERVICE_URI))
         .andRespond(
             withStatus(HttpStatus.CREATED).body(json).contentType(MediaType.APPLICATION_JSON));
 
@@ -60,7 +63,7 @@ public class TransactionServiceTest extends AbstractTest {
         "[{\"accountId\":1,\"amount\":10,\"dateTransacted\":\"2021-02-09T00:38:41.441411+05:30\",\"type\":\"CREDIT\"},{\"accountId\":1,\"amount\":20,\"dateTransacted\":\"2021-02-09T00:38:54.269594+05:30\",\"type\":\"DEBIT\"},{\"accountId\":1,\"amount\":40,\"dateTransacted\":\"2021-02-09T00:39:00.700492+05:30\",\"type\":\"DEBIT\"},{\"accountId\":1,\"amount\":4000,\"dateTransacted\":\"2021-02-09T00:39:09.097132+05:30\",\"type\":\"CREDIT\"}]";
 
     server
-        .expect(requestTo("http://localhost:8081/api/bank/v1/transaction?accountId=1"))
+        .expect(requestTo(TRANSACTION_SERVICE_URI + "?accountId=1"))
         .andRespond(withSuccess(json, MediaType.APPLICATION_JSON));
 
     final List<TransactionVO> transactions = transactionService.getAllTransactions(1L);
@@ -70,7 +73,7 @@ public class TransactionServiceTest extends AbstractTest {
   @Test
   public void givenValidTransactionId_WhenDeleteTransaction_ThenSucceed() throws Exception {
     server
-        .expect(requestTo("http://localhost:8081/api/bank/v1/transaction/1"))
+        .expect(requestTo(TRANSACTION_SERVICE_URI + "/1"))
         .andRespond(withSuccess("", MediaType.APPLICATION_JSON));
 
     transactionService.deleteTransaction(1L);
