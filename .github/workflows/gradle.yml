@@ -27,6 +27,6 @@ jobs:
       run: ./gradlew build
     - name: Publish to DockerHub
       run: ./gradlew bootBuildImage
-      with:
+      env:
         dockerUsername: ${{ secrets.DOCKER_USERNAME }}
         dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
