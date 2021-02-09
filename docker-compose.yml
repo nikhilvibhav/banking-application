@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  account-service:
+    image: nikhilvibhav/account-service:latest
+    container_name: account-service
+    ports:
+      - "8080:8080"
+    networks:
+      - banking-network
+    environment:
+      WAIT_HOSTS: transaction-service:8081
+
+  transaction-service:
+    image: nikhilvibhav/transaction-service:latest
+    container_name: transaction-service
+    ports:
+      - "8081:8081"
+    networks:
+      - banking-network
+
+networks:
+  banking-network:

@@ -46,3 +46,7 @@ dependencyManagement {
 test {
     useJUnitPlatform()
 }
+
+bootBuildImage {
+    imageName = "nikhilvibhav/${project.name}:latest"
+}
