@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.4.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.google.cloud.tools.jib' version '2.7.1'
     id 'java'
 }
 
@@ -49,4 +50,13 @@ test {
 
 bootBuildImage {
     imageName = "nikhilvibhav/${project.name}:latest"
+    publish = true
+    docker {
+        publishRegistry {
+            username = System.getenv('dockerUsername')
+            password = System.getenv('dockerPassword')
+            url = 'https://hub.docker.com/repository/docker/nikhilvibhav/account-service'
+            email = 'nikhil92ind@gmail.com'
+        }
+    }
 }
