@@ -1,4 +1,4 @@
-package io.assessment.banking.controller;
+package io.assessment.banking.transaction.controller;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -10,24 +10,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import io.assessment.banking.controller.account.AccountController;
-import io.assessment.banking.exception.account.CreditTooLowException;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Controller Advice for exception handling for {@link AccountController}
+ * REST Controller Advice for handling exception scenarios
  *
  * @author Nikhil Vibhav
  */
 @RestControllerAdvice
 @Log4j2
 public class ControllerAdvice extends ResponseEntityExceptionHandler {
-
   /**
    * Handles the {@link ConstraintViolationException}
    *
@@ -93,22 +91,29 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
   }
 
   /**
-   * Handles the {@link CreditTooLowException}
+   * Handles the {@link MissingServletRequestParameterException}
    *
-   * @param ex - instance of {@link CreditTooLowException}
+   * @param ex - instance of {@link MissingServletRequestParameterException}
+   * @param headers - the HTTP headers
+   * @param status - the HTTP status
+   * @param request - the incoming request
    * @return the {@link ResponseEntity} containing the error response
    */
-  @ExceptionHandler(CreditTooLowException.class)
-  public ResponseEntity<Object> handleCreditTooLow(final CreditTooLowException ex) {
+  @Override
+  protected ResponseEntity<Object> handleMissingServletRequestParameter(
+      final MissingServletRequestParameterException ex,
+      final HttpHeaders headers,
+      final HttpStatus status,
+      final WebRequest request) {
+    log.info("Handling MissingServletRequestParameterException - {}", ex.getMessage());
 
-    log.info("Handling CreditTooLowException - {}", ex.getMessage());
-
+    final List<String> errors = Collections.singletonList(ex.getMessage());
     final Map<String, Object> body = new HashMap<>();
     body.put("timestamp", new Date());
-    body.put("status", HttpStatus.BAD_REQUEST.value());
-    body.put("message", "The request failed validation checks. Error count - 1");
-    body.put("errors", Collections.singletonList(ex.getMessage()));
+    body.put("status", status.value());
+    body.put("message", "The request failed validation checks. Error Count - " + errors.size());
+    body.put("errors", errors);
 
-    return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(body, headers, status);
   }
 }
