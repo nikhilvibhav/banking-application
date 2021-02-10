@@ -1,6 +1,7 @@
 package io.assessment.banking.controller.customer;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -61,7 +62,10 @@ public class CustomerController {
     final Customer customer = customerService.getCustomerById(id);
 
     final List<AccountVO> accounts =
-        customer.getAccounts().stream().map(accountFunction()).collect(Collectors.toList());
+        customer.getAccounts().stream()
+            .map(accountFunction())
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
     final CustomerVO customerResponse = CustomerMapper.toCustomerVO(customer);
     customerResponse.setAccounts(accounts);
@@ -69,7 +73,13 @@ public class CustomerController {
     return ResponseEntity.ok(customerResponse);
   }
 
-  // TODO: Fix error handling refer - https://www.baeldung.com/java-lambda-exceptions
+  /**
+   * {@link Function} to get the transactions for an account and map it to {@link AccountVO} value
+   * object
+   *
+   * @return {@link AccountVO} value objects with the transactions, if an error occurs while calling
+   *     transaction service, returns null
+   */
   private Function<Account, AccountVO> accountFunction() {
     return account -> {
       try {
@@ -77,7 +87,8 @@ public class CustomerController {
         accountVO.setTransactions(transactionService.getAllTransactions(account.getId()));
         return accountVO;
       } catch (TransactionServiceRestException | TransactionServiceInvalidResponseException e) {
-        throw new RuntimeException("An exception occurred while calling transaction-service");
+        log.error("Couldn't get transactions for accountId: {}, ignoring...", account.getId());
+        return null;
       }
     };
   }
