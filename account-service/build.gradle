@@ -55,8 +55,8 @@ bootBuildImage {
         publishRegistry {
             username = System.getenv('dockerUsername')
             password = System.getenv('dockerPassword')
-            url = 'https://hub.docker.com/repository/docker/nikhilvibhav/account-service'
-            email = 'nikhil92ind@gmail.com'
+            url = System.getenv('dockerUrl')
+            email = System.getenv('dockerEmail')
         }
     }
 }

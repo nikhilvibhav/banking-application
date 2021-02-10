@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.assessment.banking.transaction.constant.TransactionType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionVO {
 
+  @Schema(accessMode = Schema.AccessMode.READ_ONLY)
   private Long id;
 
   @NotNull(message = "amount cannot be null")
@@ -33,5 +35,6 @@ public class TransactionVO {
   @NotNull(message = "accountId cannot be null")
   private Long accountId;
 
+  @Schema(accessMode = Schema.AccessMode.READ_ONLY)
   private ZonedDateTime dateTransacted;
 }
