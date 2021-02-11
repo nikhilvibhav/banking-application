@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { BrowserRouter as Router, NavLink, Route, Switch } from 'react-router-dom';
+import { NavLink, Route, Switch } from 'react-router-dom';
 import CreateCurrentAccount from './components/CreateCurrentAccount';
 import GetCustomer from './components/GetCustomer';
 
@@ -31,8 +31,10 @@ class App extends Component {
         <div className="container">
             <div className="col-md-6">
               <h1 className="text-center" style={style}>React Banking Application</h1>
+              <Switch>
                 <Route path="/create-account/current" component={CreateCurrentAccount} />
                 <Route path="/get-customer" component={GetCustomer} />
+              </Switch>
             </div>
         </div>
       </div>
