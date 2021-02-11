@@ -1,40 +1,43 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import { BrowserRouter as Router, NavLink, Route, Switch } from 'react-router-dom';
 import CreateCurrentAccount from './components/CreateCurrentAccount';
 import GetCustomer from './components/GetCustomer';
 
-function App() {
-  return (
-    <div>
-      <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <div className="navbar-nav mr-auto">
-          <li className="nav-item">
-            <NavLink to={"/create-account/current"} className="nav-link">
-              Create a Current Account
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <nav className="navbar navbar-expand navbar-dark bg-dark">
+          <div className="navbar-nav mr-auto">
+            <li>
+              <NavLink to="/" className="nav-link">
+                Home
               </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to={"/get-customer"} className="nav-link">
-              Get a Customer by ID
-              </NavLink>
-          </li>
-        </div>
-      </nav>
-
-      <div className="container">
-        <Router>
-          <div className="col-md-6">
-            <h1 className="text-center" style={style}>React Banking Application</h1>
-            <Switch>
-              <Route path="/create-account/current" component={CreateCurrentAccount} />
-              <Route path="/get-customer" component={GetCustomer} />
-            </Switch>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/create-account/current" className="nav-link">
+                Create a Current Account
+                </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/get-customer" className="nav-link">
+                Get a Customer by ID
+                </NavLink>
+            </li>
           </div>
-        </Router>
+        </nav>
+
+        <div className="container">
+            <div className="col-md-6">
+              <h1 className="text-center" style={style}>React Banking Application</h1>
+                <Route path="/create-account/current" component={CreateCurrentAccount} />
+                <Route path="/get-customer" component={GetCustomer} />
+            </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 const style = {
