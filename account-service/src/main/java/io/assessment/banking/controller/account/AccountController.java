@@ -74,26 +74,39 @@ public class AccountController {
     final Customer customer = customerService.getCustomerById(request.getCustomerId());
     final Account savedAccount =
         accountService.createAccount(AccountMapper.toAccount(customer, AccountType.CURRENT));
-
     final Account updatedAccount =
         accountService.updateBalance(
             savedAccount.getId(), request.getInitialCredit(), TransactionType.CREDIT);
 
+    saveTransaction(request.getInitialCredit(), savedAccount.getId());
+
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(AccountMapper.toAccountVO(updatedAccount));
+  }
+
+  /**
+   * Calls transaction service to save the transaction
+   *
+   * @param amount - the amount to save
+   * @param accountId - the account id against which to save the transaction
+   * @throws AccountNotFoundException - when the application cannot find the account by the given id
+   * @throws AccountCreationFailedException - thrown when the saveTransaction failed and returns an
+   *     error response to the user
+   */
+  private void saveTransaction(final double amount, final long accountId)
+      throws AccountNotFoundException, AccountCreationFailedException {
     try {
       final TransactionVO transactionToSave = new TransactionVO();
-      transactionToSave.setAccountId(savedAccount.getId());
+      transactionToSave.setAccountId(accountId);
       transactionToSave.setType(TransactionType.CREDIT);
-      transactionToSave.setAmount(request.getInitialCredit());
+      transactionToSave.setAmount(amount);
 
       final TransactionVO savedTransaction = transactionService.saveTransaction(transactionToSave);
       log.debug("Save transaction response {}", savedTransaction);
     } catch (TransactionServiceRestException | TransactionServiceInvalidResponseException e) {
       // Rollback account creation
-      rollbackAccountCreation(updatedAccount.getId());
+      rollbackAccountCreation(accountId);
     }
-
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(AccountMapper.toAccountVO(updatedAccount));
   }
 
   /**

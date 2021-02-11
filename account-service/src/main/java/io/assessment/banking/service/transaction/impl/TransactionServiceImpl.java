@@ -43,6 +43,8 @@ public class TransactionServiceImpl implements TransactionService {
   @Autowired
   public TransactionServiceImpl(final RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
+
+    // Gson wasn't able to parse ZonedDateTime, so registering a custom type adapter
     gson =
         new GsonBuilder()
             .registerTypeAdapter(
@@ -107,11 +109,7 @@ public class TransactionServiceImpl implements TransactionService {
   public List<TransactionVO> getAllTransactions(final Long accountId)
       throws TransactionServiceRestException, TransactionServiceInvalidResponseException {
 
-    final URI uri =
-        UriComponentsBuilder.fromUriString(transactionServiceBaseUrl)
-            .queryParam("accountId", accountId)
-            .build()
-            .toUri();
+    final URI uri = createGetTransactionsUri(accountId);
 
     try {
       final ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
@@ -153,5 +151,18 @@ public class TransactionServiceImpl implements TransactionService {
           id);
       throw new TransactionServiceRestException("REST call to delete the transaction by id failed");
     }
+  }
+
+  /**
+   * Creates a {@link URI} for calling get transactions by account id endpoint
+   *
+   * @param accountId - the account id against which to find the transactions
+   * @return the final {@link URI}
+   */
+  private URI createGetTransactionsUri(final Long accountId) {
+    return UriComponentsBuilder.fromUriString(transactionServiceBaseUrl)
+        .queryParam("accountId", accountId)
+        .build()
+        .toUri();
   }
 }

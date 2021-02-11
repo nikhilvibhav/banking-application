@@ -61,16 +61,23 @@ public class CustomerController {
     log.info("Received request to get customer by id: {}", id);
     final Customer customer = customerService.getCustomerById(id);
 
-    final List<AccountVO> accounts =
-        customer.getAccounts().stream()
-            .map(accountFunction())
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
     final CustomerVO customerResponse = CustomerMapper.toCustomerVO(customer);
-    customerResponse.setAccounts(accounts);
+    customerResponse.setAccounts(getAccountsWithTransactions(customer));
 
     return ResponseEntity.ok(customerResponse);
+  }
+
+  /**
+   * Returns a list of {@link AccountVO} containing the transactions for the customer
+   *
+   * @param customer - the customer as retrieved from the DB
+   * @return a list of {@link AccountVO} containing the transactions against that account
+   */
+  private List<AccountVO> getAccountsWithTransactions(final Customer customer) {
+    return customer.getAccounts().stream()
+        .map(mapTransactionsToAccount())
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -80,7 +87,7 @@ public class CustomerController {
    * @return {@link AccountVO} value objects with the transactions, if an error occurs while calling
    *     transaction service, returns null
    */
-  private Function<Account, AccountVO> accountFunction() {
+  private Function<Account, AccountVO> mapTransactionsToAccount() {
     return account -> {
       try {
         final AccountVO accountVO = AccountMapper.toAccountVO(account);

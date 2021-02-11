@@ -155,8 +155,9 @@ Now you can run the httpie/curl commands to create a current account, or to get 
         "surname": "Doe"
     }
     ```
-   
+
 Once the testing is complete, you can shut down the containers by running:
+
 ```
 ❯ docker-compose down
 Stopping account-service     ... done
@@ -166,7 +167,6 @@ Removing transaction-service ... done
 Removing network banking-application_banking-network
 ```
 
-
 For more requests, see
 the [Banking Application Postman Collection](postman/Banking%20Application.postman_collection.json)
 
@@ -175,3 +175,15 @@ the [Banking Application Postman Collection](postman/Banking%20Application.postm
 Although you can create transactions directly, creating those will not update the balance. This can be fixed by adding a
 new endpoint to perform a transaction which will update the balance in the database and call transaction service to
 create a new transaction
+
+---
+
+## Improvements:
+
+1. Create a facade between Account Controller and Service layers so Account Controller doesn't interact directly with
+   multiple difference service classes. A similar facade can be created for Customer Controller as well.
+2. Both the services and the React client are in a single repository, they can be moved into separate git repositories
+   of their own
+3. Better resiliency using something like Hystrix (not supported in newer Spring Boot versions) or Resilience4J
+4. API Security using JWT tokens or something similar
+5. 
