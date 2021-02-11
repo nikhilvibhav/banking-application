@@ -54,6 +54,7 @@ public class CustomerController {
    * @return the customer object
    * @throws CustomerNotFoundException when the application cannot find the customer by the given id
    */
+  @CrossOrigin("http://localhost:3000")
   @GetMapping(path = "/{id}")
   public ResponseEntity<CustomerVO> getCustomerById(@PathVariable @Min(1) final Long id)
       throws CustomerNotFoundException {

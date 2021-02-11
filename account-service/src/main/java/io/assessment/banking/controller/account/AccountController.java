@@ -60,6 +60,7 @@ public class AccountController {
    *     id
    * @throws CreditTooLowException - when the initial credit in the request is 0
    */
+  @CrossOrigin("http://localhost:3000")
   @PostMapping(path = "/current", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AccountVO> openCurrentAccount(@Valid @RequestBody final AccountVO request)
       throws AccountNotFoundException, LowBalanceException, CustomerNotFoundException,
