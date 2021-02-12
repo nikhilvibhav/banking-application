@@ -1,4 +1,4 @@
-package io.assessment.banking.controller.customer.mapper;
+package io.assessment.banking.facade.customer.mapper;
 
 import io.assessment.banking.model.customer.entity.Customer;
 import io.assessment.banking.model.customer.vo.CustomerVO;

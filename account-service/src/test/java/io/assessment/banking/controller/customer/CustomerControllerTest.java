@@ -1,5 +1,6 @@
 package io.assessment.banking.controller.customer;
 
+import java.time.ZonedDateTime;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
@@ -12,10 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import io.assessment.banking.AbstractTest;
+import io.assessment.banking.constant.account.AccountType;
 import io.assessment.banking.exception.customer.CustomerNotFoundException;
-import io.assessment.banking.model.customer.entity.Customer;
-import io.assessment.banking.service.customer.CustomerService;
-import io.assessment.banking.service.transaction.TransactionService;
+import io.assessment.banking.facade.customer.CustomerFacade;
+import io.assessment.banking.facade.customer.mapper.CustomerMapper;
+import io.assessment.banking.model.account.vo.AccountVO;
+import io.assessment.banking.model.customer.vo.CustomerVO;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -37,18 +40,20 @@ public class CustomerControllerTest extends AbstractTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockBean private CustomerService customerService;
-  @MockBean private TransactionService transactionService;
+  @MockBean private CustomerFacade facade;
 
   @Test
   public void givenCustomerId_WhenGetCustomer_ThenReturn200_Success() throws Exception {
     // Given
-    final Customer customerWithAccount = getCustomer();
-    customerWithAccount.setAccounts(Collections.singletonList(getAccount(customerWithAccount)));
+    final CustomerVO customerWithAccount = CustomerMapper.toCustomerVO(getCustomer());
+    final AccountVO savedAccount = new AccountVO();
+    savedAccount.setCustomerId(customerWithAccount.getId());
+    savedAccount.setType(AccountType.CURRENT);
+    savedAccount.setBalance(20.0);
+    savedAccount.setDateUpdated(ZonedDateTime.now());
+    customerWithAccount.setAccounts(Collections.singletonList(savedAccount));
 
-    given(customerService.getCustomerById(1L)).willReturn(customerWithAccount);
-    given(transactionService.getAllTransactions(1L))
-        .willReturn(Collections.singletonList(getTransactionVO()));
+    given(facade.getCustomerById(1L)).willReturn(customerWithAccount);
 
     // Then
     mockMvc
@@ -59,8 +64,7 @@ public class CustomerControllerTest extends AbstractTest {
         .andExpect(jsonPath("$.email").value("johndoe@example.com"))
         .andExpect(jsonPath("$.accounts[0].customerId").value("1"));
 
-    verify(customerService, times(1)).getCustomerById(1L);
-    verify(transactionService, times(1)).getAllTransactions(1L);
+    verify(facade, times(1)).getCustomerById(1L);
   }
 
   @Test
@@ -90,10 +94,10 @@ public class CustomerControllerTest extends AbstractTest {
   }
 
   @Test
-  public void givenIncorrectCustomerId_WhenGetCustomer_ThenReturn500_CustomerNotFound()
+  public void givenIncorrectCustomerId_WhenGetCustomer_ThenReturn404_CustomerNotFound()
       throws Exception {
     // Given
-    given(customerService.getCustomerById(1L)).willThrow(CustomerNotFoundException.class);
+    given(facade.getCustomerById(1L)).willThrow(CustomerNotFoundException.class);
 
     // Then
     mockMvc
@@ -102,6 +106,6 @@ public class CustomerControllerTest extends AbstractTest {
         .andExpect(status().isNotFound())
         .andExpect(status().reason("Could not find customer with the given id"));
 
-    verify(customerService, times(1)).getCustomerById(1L);
+    verify(facade, times(1)).getCustomerById(1L);
   }
 }

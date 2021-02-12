@@ -57,19 +57,19 @@ class GetCustomer extends Component {
                   Accounts:
         {customer.accounts.map(account => (
                   <div key={account.id}>
-                    <h4>ID: {account.id}</h4>
-                    <h4>Type: {account.type}</h4>
-                    <h4>Balance: {account.balance}</h4>
-                    <h4>Date Created: {account.dateCreated}</h4>
-                    <h4>Date Updated: {account.dateUpdated}</h4>
-                    <h4>
+                    <h5>ID: {account.id}</h5>
+                    <h5>Type: {account.type}</h5>
+                    <h5>Balance: {account.balance}</h5>
+                    <h5>Date Created: {account.dateCreated}</h5>
+                    <h5>Date Updated: {account.dateUpdated}</h5>
+                    <h5>
                       Transactions: {account.transactions.map(transaction => (
                       <div key={transaction.id}>
-                        <h5>Amount: {transaction.amount}</h5>
-                        <h5>Type: {transaction.type}</h5>
+                        <p>Amount: {transaction.amount}</p>
+                        <p>Type: {transaction.type}</p>
                       </div>
                     ))}
-                    </h4>
+                    </h5>
                   </div>
                 ))}
                 </h3>

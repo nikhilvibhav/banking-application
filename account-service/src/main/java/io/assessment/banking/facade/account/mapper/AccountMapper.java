@@ -1,4 +1,4 @@
-package io.assessment.banking.controller.account.mapper;
+package io.assessment.banking.facade.account.mapper;
 
 import io.assessment.banking.constant.account.AccountType;
 import io.assessment.banking.model.account.entity.Account;
